@@ -1,1 +1,41 @@
+#include <WiFi.h>
+#include <FirebaseESP32.h>  // Librería de Mobizt
+
+// Credenciales WiFi
+const char* ssid = "TU_SSID";
+const char* password = "TU_PASSWORD";
+
+// Firebase config
+#define FIREBASE_HOST "https://console.firebase.google.com/u/3/project/acuaponia-eb0a4/database/acuaponia-eb0a4-default-rtdb/data/~2F?hl=es-419" 
+#define FIREBASE_AUTH ""  // Secret key o token
+
+FirebaseData firebaseData;
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Conectando a WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConectado a WiFi");
+
+  // Conectarse a Firebase
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Firebase.reconnectWiFi(true);
+
+  // Escribir datos
+  if (Firebase.setFloat(firebaseData, "/sensor/temperatura", 25.5)) {
+    Serial.println("Dato enviado a Firebase!");
+  } else {
+    Serial.print("Error: ");
+    Serial.println(firebaseData.errorReason());
+  }
+}
+
+void loop() {
+  // Aquí puedes seguir enviando o leyendo datos
+}
 
